@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Premium Birthday Surprise 🎂</title>
+    <style>
+        :root {
+            --primary: #ff3d68;
+            --secondary: #ff7a9e;
+            --bg-dark: #0f0c29;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+
+        body {
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+            perspective: 1000px;
+        }
+
+        /* DECORATIONS */
+        .stars-container {
+            position: fixed;
+            inset: 0;
+            z-index: -1;
+            overflow: hidden;
+        }
+
+        /* MAIN CARD */
+        .card {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            width: 92%;
+            max-width: 450px;
+            padding: 40px 20px;
+            border-radius: 30px;
+            text-align: center;
+            box-shadow: 0 25px 80px rgba(0,0,0,0.5);
+            border: 2px solid rgba(255,255,255,0.3);
+            z-index: 10;
+            transition: transform 0.5s;
+        }
+
+        h1 { color: var(--primary); font-size: 28px; text-shadow: 1px 1px 2px rgba(0,0,0,0.1); }
+        p { color: #555; font-size: 16px; margin-top: 8px; }
+
+        button {
+            cursor: pointer;
+            width: 80%;
+            padding: 15px;
+            border: none;
+            border-radius: 50px;
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
+            color: white;
+            font-size: 18px;
+            font-weight: bold;
+            margin-top: 20px;
+            box-shadow: 0 10px 20px rgba(255, 61, 104, 0.3);
+            transition: 0.3s;
+        }
+        button:hover { transform: translateY(-3px); box-shadow: 0 15px 25px rgba(255, 61, 104, 0.4); }
+
+        /* CAKE SECTION */
+        .cake-container { margin: 30px 0; position: relative; }
+        #cake { font-size: 100px; filter: drop-shadow(0 10px 10px rgba(0,0,0,0.2)); }
+        #flame {
+            position: absolute;
+            top: 0px; left: 50%;
+            transform: translateX(-50%);
+            font-size: 35px;
+            animation: flicker 0.1s infinite alternate;
+        }
+        @keyframes flicker {
+            from { transform: translateX(-50%) scale(1); opacity: 0.8; }
+            to { transform: translateX(-50%) scale(1.1) translateY(-2px); opacity: 1; }
+        }
+
+        /* FLOATING 3D BOOK */
+        .bookWrap {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 30px;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotateX(5deg); }
+            50% { transform: translateY(-15px) rotateX(10deg); }
+        }
+
+        .book {
+            width: 280px;
+            height: 200px;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 1.5s cubic-bezier(0.645, 0.045, 0.355, 1);
+        }
+
+        .book.open { transform: rotateY(0deg) translateX(50px); }
+
+        .cover {
+            position: absolute;
+            width: 100%; height: 100%;
+            background: linear-gradient(135deg, #d4145a, #fb7185);
+            border-radius: 5px 15px 15px 5px;
+            transform-origin: left;
+            transition: transform 1.2s cubic-bezier(0.645, 0.045, 0.355, 1);
+            z-index: 5;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            box-shadow: inset 5px 0 10px rgba(0,0,0,0.2);
+        }
+
+        .book.open .cover { transform: rotateY(-160deg); }
+
+        .page {
+            position: absolute;
+            width: 95%; height: 95%;
+            top: 2.5%; left: 0;
+            background: white;
+            border-radius: 2px 10px 10px 2px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            box-shadow: 2px 2px 10px rgba(0,0,0,0.1);
+            opacity: 0;
+            transition: 0.5s;
+        }
+
+        .page.active { opacity: 1; z-index: 3; }
+        .page h2 { color: var(--primary); font-size: 20px; margin-bottom: 10px; }
+        .page p { font-size: 15px; line-height: 1.4; color: #333; }
+
+        .navBtns { display: flex; gap: 15px; margin-top: 25px; }
+        .navBtns button { padding: 8px 20px; width: auto; font-size: 14px; }
+
+        /* FLOATING ELEMENTS */
+        .effect { position: fixed; pointer-events: none; z-index: 1; }
+        .balloon {
+            bottom: -100px;
+            width: 45px; height: 60px;
+            border-radius: 50%;
+            animation: rise 8s linear forwards;
+        }
+        @keyframes rise { to { transform: translateY(-125vh); } }
+
+        .sticker { font-size: 30px; animation: riseSpin 6s linear forwards; }
+        @keyframes riseSpin {
+            to { transform: translateY(-125vh) rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+
+<div class="stars-container" id="stars"></div>
+
+<div class="card" id="mainCard">
+    <h1 id="title">🎂 Make a Wish</h1>
+    <p id="msg">Enable microphone & blow on the screen! 💨</p>
+
+    <div class="cake-container">
+        <div id="cake">🎂</div>
+        <div id="flame">🔥</div>
+    </div>
+
+    <button id="micBtn">Start Magic 🎤</button>
+    <button id="giftBtn" style="display:none" onclick="openGift()">Click to Open Your Gift 🎁</button>
+
+    <div class="bookWrap" id="bookWrap">
+        <div class="book" id="book">
+            <div class="cover">Open Me...</div>
+            
+            <div class="page active">
+                <h2>💖 Happy Birthday!</h2>
+                <p>This is a magical book crafted just for you. Every page is a wish for your happiness. ✨</p>
+            </div>
+            <div class="page">
+                <h2>🎉 Celebrate!</h2>
+                <p>May your year be filled with laughter, adventures, and endless joy. 😄</p>
+            </div>
+            <div class="page">
+                <h2>🌟 You're Rare</h2>
+                <p>In a world of billions, you shine the brightest. Never stop being you! 💫</p>
+            </div>
+            <div class="page">
+                <h2>🎁 Final Wish</h2>
+                <p>I hope all your dreams come true this year. Stay blessed! 💖</p>
+            </div>
+        </div>
+
+        <div class="navBtns">
+            <button onclick="prevPage()">⬅ Back</button>
+            <button onclick="nextPage()">Next ➡</button>
+        </div>
+    </div>
+</div>
+
+<audio id="song" loop src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3"></audio>
+
+<script>
+    let audioCtx, analyser, mic, data;
+    let candleOut = false;
+    let smoothVol = 0;
+
+    // Background Stars
+    function createStars() {
+        const container = document.getElementById('stars');
+        for(let i=0; i<50; i++) {
+            const star = document.createElement('div');
+            star.style.position = 'absolute';
+            star.style.width = '2px';
+            star.style.height = '2px';
+            star.style.background = 'white';
+            star.style.left = Math.random() * 100 + 'vw';
+            star.style.top = Math.random() * 100 + 'vh';
+            star.style.opacity = Math.random();
+            star.style.borderRadius = '50%';
+            container.appendChild(star);
+        }
+    }
+    createStars();
+
+    // Mic Detection
+    micBtn.onclick = () => {
+        navigator.mediaDevices.getUserMedia({ audio: true }).then(stream => {
+            audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            analyser = audioCtx.createAnalyser();
+            mic = audioCtx.createMediaStreamSource(stream);
+            mic.connect(analyser);
+            analyser.fftSize = 256;
+            data = new Uint8Array(analyser.frequencyBinCount);
+            msg.innerText = "Now... BLOW! 💨🔥";
+            micBtn.style.opacity = '0.5';
+            detectBlow();
+        }).catch(err => {
+            alert("Please allow microphone access to blow the candle!");
+        });
+    };
+
+    function detectBlow() {
+        if (candleOut) return;
+        analyser.getByteFrequencyData(data);
+        let volume = data.reduce((a, b) => a + b) / data.length;
+        smoothVol = smoothVol * 0.8 + volume * 0.2;
+
+        if (smoothVol > 40) {
+            blowOut();
+        } else {
+            requestAnimationFrame(detectBlow);
+        }
+    }
+
+    function blowOut() {
+        candleOut = true;
+        flame.style.display = "none";
+        title.innerText = "🎉 HAPPY BIRTHDAY! 🎉";
+        msg.innerText = "You made a wish! Now open your gift.";
+        micBtn.style.display = "none";
+        giftBtn.style.display = "block";
+        
+        // Background Music
+        const song = document.getElementById('song');
+        song.play().catch(e => console.log("Music play blocked"));
+
+        spawnCelebration();
+    }
+
+    function openGift() {
+        giftBtn.style.display = "none";
+        cake.style.display = "none";
+        bookWrap.style.display = "flex";
+        setTimeout(() => {
+            book.classList.add("open");
+        }, 100);
+        spawnCelebration();
+    }
+
+    /* PAGE NAVIGATION */
+    let currentPage = 0;
+    const pages = document.querySelectorAll(".page");
+    function showPage(index) {
+        pages.forEach(p => p.classList.remove("active"));
+        pages[index].classList.add("active");
+    }
+    function nextPage() { if(currentPage < pages.length - 1) { currentPage++; showPage(currentPage); } }
+    function prevPage() { if(currentPage > 0) { currentPage--; showPage(currentPage); } }
+
+    /* DECORATIONS */
+    function spawnCelebration() {
+        for(let i=0; i<30; i++) {
+            setTimeout(() => {
+                createBalloon();
+                createSticker();
+            }, i * 100);
+        }
+    }
+
+    function createBalloon() {
+        const b = document.createElement("div");
+        b.className = "effect balloon";
+        b.style.left = Math.random() * 100 + "vw";
+        b.style.background = `hsl(${Math.random() * 360}, 80%, 60%)`;
+        document.body.appendChild(b);
+        setTimeout(() => b.remove(), 8000);
+    }
+
+    function createSticker() {
+        const icons = ["🎉", "🎁", "💖", "✨", "🥳", "🎈", "🍰"];
+        const s = document.createElement("div");
+        s.className = "effect sticker";
+        s.innerText = icons[Math.floor(Math.random() * icons.length)];
+        s.style.left = Math.random() * 100 + "vw";
+        s.style.bottom = "-50px";
+        document.body.appendChild(s);
+        setTimeout(() => s.remove(), 6000);
+    }
+</script>
+
+</body>
+</html>
